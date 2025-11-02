@@ -1,0 +1,27 @@
+<!-- /sayhi/components/navbar.html -->
+<nav class="navbar navbar-expand-lg sayhi-navbar shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+            <img src="gambar/logo.png" alt="SayHi" class="logo-compact" />
+            <span class="brand-amaranth">SayHi!</span>
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navSayHi"
+            aria-controls="navSayHi" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon" style="filter: invert(1)"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navSayHi">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-semibold">
+                <li class="nav-item"><a class="nav-link" data-nav="data" href="data.html">Data</a></li>
+                <li class="nav-item"><a class="nav-link" data-nav="laporan" href="laporan.html">Laporan</a></li>
+                <li class="nav-item"><a class="nav-link" data-nav="akun" href="akun.html">Akun</a></li>
+                <li class="nav-item ms-lg-2">
+                    <a class="btn btn-sm btn-light rounded-pill px-3 fw-bold" href="/sayhi/api/auth/logout.php">
+                        Logout ⏻
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

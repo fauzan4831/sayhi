@@ -1,0 +1,178 @@
+/* --- Reset & Pengaturan Dasar --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(180deg, #CECECE, #F8A5A5);
+    min-height: 100vh;
+    color: #333;
+    position: relative;
+    overflow-x: hidden; /* Mencegah scroll horizontal */
+}
+
+/* --- Navbar --- */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+}
+
+.logo img {
+    width: 120px;
+    height: auto;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.4);
+    padding: 8px 15px;
+    border-radius: 50px; /* Sesuai permintaan "corner radius 50%" yang menciptakan bentuk pil */
+}
+
+.nav-links li {
+    margin: 0 20px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+/* --- Menu Admin & Dropdown --- */
+.admin-menu {
+    position: relative;
+}
+
+.admin-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Jarak antara teks 'Admin' dan ikon panah */
+}
+
+.dropdown-content {
+    display: none; /* Disembunyikan secara default */
+    position: absolute;
+    right: 0;
+    top: 150%;
+    background-color: white;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+    z-index: 1;
+    border-radius: 10px;
+    padding: 10px 0;
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Class untuk menampilkan dropdown via JavaScript */
+.show {
+    display: block;
+}
+
+
+/* --- Konten Utama (Hero Text) --- */
+main {
+    padding: 5% 10%;
+}
+
+.hero-text h1 {
+    font-family: 'Playwrite US Trad', cursive;
+    font-size: 4rem;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.hero-text p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-top: 1rem;
+    max-width: 550px;
+}
+
+/* --- Ilustrasi --- */
+.illustration {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    max-width: 700px;
+    opacity: 0.85; /* Opasitas 85% */
+}
+
+.illustration img {
+    width: 100%;
+    display: block; /* Menghilangkan spasi ekstra di bawah gambar */
+}
+
+/* --- Desain Responsif --- */
+@media (max-width: 992px) {
+    .nav-links {
+        display: none; /* Sembunyikan link di tengah pada layar kecil untuk simplisitas */
+    }
+
+    .hero-text h1 {
+        font-size: 3rem;
+    }
+
+    .hero-text p {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    main {
+        padding: 10% 8%;
+    }
+    
+    .hero-text {
+        text-align: center;
+    }
+
+    .hero-text h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-text p {
+        font-size: 1.5rem;
+        margin: 1rem auto 0;
+    }
+
+    .illustration {
+        width: 90%;
+        max-width: 400px;
+    }
+    
+    .logo img {
+        width: 100px;
+    }
+}

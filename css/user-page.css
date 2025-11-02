@@ -1,0 +1,429 @@
+/* --- Reset & Pengaturan Dasar --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(180deg, #CECECE, #F8A5A5);
+    min-height: 100vh;
+    color: #333;
+    position: relative;
+    overflow-x: hidden;
+    /* Mencegah scroll horizontal */
+}
+
+/* --- Navbar --- */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+}
+
+.logo img {
+    width: 120px;
+    height: auto;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.4);
+    padding: 8px 15px;
+    border-radius: 50px;
+    /* Sesuai permintaan "corner radius 50%" yang menciptakan bentuk pil */
+}
+
+.nav-links li {
+    margin: 0 20px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+/* --- Menu Admin & Dropdown --- */
+.admin-menu {
+    position: relative;
+}
+
+.admin-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* Jarak antara teks 'Admin' dan ikon panah */
+}
+
+.dropdown-content {
+    display: none;
+    /* Disembunyikan secara default */
+    position: absolute;
+    right: 0;
+    top: 150%;
+    background-color: white;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    border-radius: 10px;
+    padding: 10px 0;
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Class untuk menampilkan dropdown via JavaScript */
+.show {
+    display: block;
+}
+
+
+/* --- Konten Utama (Hero Text) --- */
+main {
+    padding: 5% 10%;
+}
+
+.hero-text h1 {
+    font-family: 'Playwrite US Trad', cursive;
+    font-size: 4rem;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.hero-text p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-top: 1rem;
+    max-width: 550px;
+}
+
+/* --- Ilustrasi --- */
+.illustration {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    max-width: 700px;
+    opacity: 0.85;
+    /* Opasitas 85% */
+}
+
+.illustration img {
+    width: 100%;
+    display: block;
+    /* Menghilangkan spasi ekstra di bawah gambar */
+}
+
+/* --- Desain Responsif --- */
+@media (max-width: 992px) {
+    .nav-links {
+        display: none;
+        /* Sembunyikan link di tengah pada layar kecil untuk simplisitas */
+    }
+
+    .hero-text h1 {
+        font-size: 3rem;
+    }
+
+    .hero-text p {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    main {
+        padding: 10% 8%;
+    }
+
+    .hero-text {
+        text-align: center;
+    }
+
+    .hero-text h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-text p {
+        font-size: 1.5rem;
+        margin: 1rem auto 0;
+    }
+
+    .illustration {
+        width: 90%;
+        max-width: 400px;
+    }
+
+    .logo img {
+        width: 100px;
+    }
+}
+
+/* ====== LAYOUT BARU HALAMAN USER (super mirip mockup) ====== */
+:root {
+    --card-w: 205px;
+    /* lebar kotak statistik */
+    --card-h: 170px;
+    /* tinggi kotak statistik */
+    --card-r: 48%;
+    /* corner radius 48% */
+    --card-gap: 22px;
+}
+
+/* Kanvas 2 kolom besar: kiri (cards) & kanan (form) */
+.canvas {
+    position: relative;
+    z-index: 2;
+    max-width: 1180px;
+    margin: 22px auto 210px;
+    padding: 0 22px;
+    display: grid;
+    grid-template-columns: 470px 1fr;
+    align-items: start;
+    gap: 34px;
+}
+
+@media (max-width: 980px) {
+    .canvas {
+        grid-template-columns: 1fr;
+        gap: 26px;
+        margin-bottom: 260px;
+    }
+}
+
+/* Ilustrasi lebih menempel ke bawah & center */
+.user-illustration.tight {
+    bottom: 12px;
+    width: min(820px, 88vw);
+    opacity: .35;
+}
+
+/* ====== STAT CARDS AREA ====== */
+.stats-stack {
+    width: 100%;
+    display: grid;
+    grid-template-columns: var(--card-w) var(--card-w);
+    grid-template-rows: var(--card-h) var(--card-h);
+    gap: var(--card-gap);
+    justify-content: start;
+    align-content: start;
+    padding-left: 22px;
+    /* agar agak masuk seperti referensi */
+}
+
+/* Tiga kotak */
+.stat-card {
+    width: var(--card-w);
+    height: var(--card-h);
+    border-radius: var(--card-r);
+    /* gradasi & color-burn biar nuansanya ke ungu-magenta */
+    background:
+        radial-gradient(160% 160% at 20% 20%, #ffffff90 0%, #ffffff20 35%, #00000000 60%),
+        linear-gradient(180deg, #6a64c6, #a23cb8 55%, #c43f8e);
+    background-blend-mode: color-burn;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, .12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    /* teks hitam seperti gambar */
+    text-align: center;
+}
+
+/* Posisi sesuai mockup: Dosen kiri-atas, Umum kiri-bawah, Mahasiswa di kanan tengah */
+.stat--dosen {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.stat--umum {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.stat--mhs {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    /* biar berada di tengah di antara atas-bawah */
+    align-self: center;
+    height: 160px;
+    /* sedikit lebih kecil seperti referensi */
+}
+
+/* Typography sesuai spesifikasi */
+.stat-label {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-weight: 700;
+    font-size: 48px;
+    letter-spacing: 1.2px;
+}
+
+.stat-num {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-weight: 700;
+    font-size: 68px;
+    margin-top: 6px;
+}
+
+/* ====== FORM PANEL ====== */
+.form-panel {
+    padding-right: 18px;
+}
+
+#data-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.frow {
+    position: relative;
+}
+
+.frow input,
+.frow select {
+    width: 100%;
+    border: none;
+    outline: none;
+    border-radius: 49%;
+    padding: 16px 24px;
+    font-family: 'Amaranth', system-ui, sans-serif;
+    font-size: 24px;
+    color: #000;
+    /* tampilan agak ungu-pink, full opacity, multiply seperti brief */
+    background: linear-gradient(180deg, #e7c7f2, #efbddc);
+    mix-blend-mode: multiply;
+    opacity: 1;
+    box-shadow: inset 0 6px 14px rgba(0, 0, 0, .08);
+}
+
+/* placeholder opacity 60% */
+.frow input::placeholder {
+    color: #000;
+    opacity: .6;
+}
+
+/* custom select + panah kanan */
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(0, 0, 0, .7);
+    pointer-events: none;
+}
+
+.frow select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.frow select:has(option[value=""]:checked) {
+    color: rgba(0, 0, 0, .6);
+}
+
+/* tombol di kanan, warna sesuai, radius 25 */
+.actions-right {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.submit-btn {
+    width: 210px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    border-radius: 25px;
+    padding: 14px 22px;
+    font-family: 'Roboto', system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    color: #000;
+    /* teks hitam seperti contoh */
+    background: linear-gradient(#9d88ea, #8F7BCC);
+    mix-blend-mode: color-burn;
+    box-shadow: 0 10px 18px rgba(0, 0, 0, .15);
+}
+
+.submit-btn:hover {
+    filter: brightness(1.03);
+}
+
+.submit-btn:active {
+    transform: translateY(1px);
+}
+
+/* Validasi (garis merah tipis saat error) */
+.field.error input,
+.field.error select,
+.frow.error input,
+.frow.error select {
+    outline: 2px solid #d33;
+}
+
+/* RESPONSIVE: rapat seperti mockup di tablet/HP */
+@media (max-width: 980px) {
+    :root {
+        --card-w: 190px;
+        --card-h: 160px;
+    }
+
+    .stats-stack {
+        justify-content: center;
+        padding-left: 0;
+    }
+
+    .actions-right {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 680px) {
+    :root {
+        --card-w: 160px;
+        --card-h: 145px;
+    }
+
+    .stat-label {
+        font-size: 40px;
+    }
+
+    .stat-num {
+        font-size: 56px;
+    }
+}

@@ -1,0 +1,188 @@
+:root {
+    --sayhi-pink: #F28FA5;
+    --sayhi-pink-soft: #FFD6DB;
+    --sayhi-danger: #E85C5C;
+    --sayhi-ink: #4B4B4B;
+}
+
+/* Background gradien lembut */
+.sayhi-bg {
+    background: linear-gradient(180deg, #ffffff, #ffd6db 65%, #f5a2a7);
+    min-height: 100vh;
+    font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--sayhi-ink);
+}
+
+/* Brand */
+.brand-amaranth {
+    font-family: "Amaranth", sans-serif;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--sayhi-danger);
+    letter-spacing: .3px;
+}
+
+/* Logo compact (selaras semua page) */
+.logo-compact {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Top thin loading bar */
+#topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: var(--sayhi-danger);
+    z-index: 1040;
+    transition: width .35s ease;
+}
+
+/* Button utama */
+.btn-sayhi {
+    background: var(--sayhi-pink);
+    border: none;
+    color: #fff;
+    font-weight: 700;
+}
+
+.btn-sayhi:hover {
+    filter: brightness(.95);
+    color: #fff;
+}
+
+/* Statistik cards pastel */
+.stat-card {
+    border: none;
+    border-radius: 18px;
+    padding: 20px 14px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.356);
+}
+
+.stat-label {
+    font-weight: 700;
+    letter-spacing: .6px;
+    color: #1b1b1b;
+}
+
+.stat-num {
+    font-size: 44px;
+    font-weight: 800;
+    color: #000;
+    margin-top: 2px;
+}
+
+.pastel-1 {
+    background: linear-gradient(180deg, #fff, #ffe5ea);
+}
+
+.pastel-2 {
+    background: linear-gradient(180deg, #fff, #ffe7f0);
+}
+
+.pastel-3 {
+    background: linear-gradient(180deg, #fff, #ffe9e1);
+}
+
+/* Ilustrasi samping form */
+.illu-side {
+    max-height: 260px;
+    width: auto;
+    object-fit: contain;
+    opacity: .90;
+}
+
+/* Responsiveness tweaks */
+@media (max-width: 992px) {
+    .illu-side {
+        max-height: 200px;
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .brand-amaranth {
+        font-size: 24px;
+    }
+
+    .stat-num {
+        font-size: 38px;
+    }
+}
+
+/* === NAVBAR GLOBAL (fix warna agar tidak terlalu terang) === */
+.sayhi-navbar {
+    background: linear-gradient(90deg, #f28fa5, #cbb2ff);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Logo dan brand */
+.sayhi-navbar .navbar-brand {
+    color: #fff;
+    font-weight: 700;
+}
+
+/* Link normal */
+.sayhi-navbar .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 6px;
+    padding: 6px 12px;
+    transition: all 0.25s ease;
+}
+
+/* Saat aktif atau hover */
+.sayhi-navbar .nav-link.active,
+.sayhi-navbar .nav-link:hover {
+    color: #fff;
+    background: rgba(0, 0, 0, 0.15); /* abu lembut agar kontras */
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+/* Tombol logout */
+.sayhi-navbar .btn-light {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    transition: all 0.25s ease;
+}
+
+.sayhi-navbar .btn-light:hover {
+    background: rgba(0, 0, 0, 0.25);
+    color: #fff;
+}
+
+/* Navbar hidden untuk halaman user */
+.hide-navbar .sayhi-navbar {
+    display: none !important;
+}
+
+/* === PAGE FADE-IN === */
+body.page-fade {
+    opacity: 0;
+    transition: opacity .35s ease;
+}
+
+body.page-fade.ready {
+    opacity: 1;
+}
+
+/* === TOPBAR === */
+#topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: #e85c5c;
+    z-index: 2000;
+    transition: width .35s ease;
+}
