@@ -14,110 +14,57 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    /* Styling tambahan untuk halaman data */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-
-    .left-tools {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .aksi {
-      width: 56px;
-      text-align: center;
-    }
-
-    .btn-icon {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 6px 8px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .btn-icon:hover {
-      filter: brightness(.96);
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .35);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 99;
-    }
-
-    .modal {
-      width: min(420px, 92vw);
-      background: #fff;
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, .15);
-      border: 1px solid #ffd6db;
-    }
-
-    .modal h3 {
-      margin: 0 0 6px;
-      color: #e85c5c;
-    }
-
-    .modal p {
-      margin: 0 0 14px;
-      color: #555;
-    }
-
-    .modal .row {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-    }
-
-    .btn-danger {
-      background: #ffd6db;
-    }
-
-    .btn-ghost {
-      background: #eee;
-    }
-
-    .pagination .page.active {
-      background: #ffd6db;
-      border-color: #ffd6db;
-    }
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+    .left-tools{display:flex;gap:8px;align-items:center;}
+    .aksi{width:56px;text-align:center;}
+    .btn-icon{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+    .btn-icon:hover{filter:brightness(.96);}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:99;}
+    .modal{width:min(420px,92vw);background:#fff;border-radius:16px;padding:18px;box-shadow:0 10px 24px rgba(0,0,0,.15);border:1px solid #ffd6db;}
+    .modal h3{margin:0 0 6px;color:#e85c5c;}
+    .modal p{margin:0 0 14px;color:#555;}
+    .modal .row{display:flex;gap:10px;justify-content:flex-end;}
+    .btn-danger{background:#ffd6db;}
+    .btn-ghost{background:#eee;}
+    .pagination .page.active{background:#ffd6db;border-color:#ffd6db;}
+    .viewer-mode .btn-delete,
+    .viewer-mode [data-del]{display:none!important;}
   </style>
 
+  <!-- === PROTEKSI LOGIN & ROLE === -->
   <script>
-    (async function guard() {
-      try {
-        const r = await fetch("/sayhi/api/auth/me.php");
-        const s = await r.json();
-        if (!s.loggedIn) location.href = "login.html";
-      } catch (e) {
-        location.href = "login.html";
+  (async function guardPage(){
+    try{
+      const r = await fetch("/sayhi/api/auth/me.php");
+      const s = await r.json();
+
+      if(!s.loggedIn){
+        location.href="login.html";
+        return;
       }
-    })();
+
+      const adminOnly=["data.html","laporan.html","akun.html"];
+      const current=location.pathname.split("/").pop();
+      if(adminOnly.includes(current)&&s.role!=="Admin"){
+        alert("Halaman ini hanya untuk Admin.");
+        location.href="index.html";
+        return;
+      }
+
+      if(s.role!=="Admin"){
+        document.body.classList.add("viewer-mode");
+      }
+    }catch(e){
+      location.href="login.html";
+    }
+  })();
   </script>
 </head>
 
 <body>
-  <!-- === NAVBAR GLOBAL PLACEHOLDER === -->
   <div id="sayhi-navbar"></div>
   <div id="topbar"></div>
 
-  <!-- === MAIN CONTENT === -->
   <main class="container my-4">
     <div class="card p-3">
       <div class="topbar">
@@ -145,7 +92,7 @@
     </div>
   </main>
 
-  <!-- === MODAL KONFIRMASI HAPUS === -->
+  <!-- MODAL -->
   <div class="modal-backdrop" id="confirmBackdrop" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
       <h3 id="confirmTitle">Hapus data tamu?</h3>
@@ -157,35 +104,26 @@
     </div>
   </div>
 
-  <!-- === SCRIPTS === -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="javascript/script.js"></script>
 
   <script>
-    // ====== STATE & ELEMENTS ======
-    const tbody = document.getElementById('tblBody');
-    const pager = document.getElementById('pager');
-    const searchInput = document.getElementById('search');
+    const tbody=document.getElementById('tblBody');
+    const pager=document.getElementById('pager');
+    const searchInput=document.getElementById('search');
+    let page=1,totalPage=1,q='',pendingDeleteId=null;
 
-    let page = 1;
-    let totalPage = 1;
-    let q = '';
-    let pendingDeleteId = null;
-
-    // ====== DATA FETCHER ======
-    async function loadData() {
-      const url = `/sayhi/api/tamu/list.php?search=${encodeURIComponent(q)}&page=${page}`;
-      try {
-        const res = await fetch(url);
-        const json = await res.json();
-
-        if (json.status !== 'success') {
-          tbody.innerHTML = `<tr><td colspan="7">Gagal memuat data.</td></tr>`;
-          pager.innerHTML = '';
-          return;
+    async function loadData(){
+      const url=`/sayhi/api/tamu/list.php?search=${encodeURIComponent(q)}&page=${page}`;
+      try{
+        const res=await fetch(url);
+        const json=await res.json();
+        if(json.status!=='success'){
+          tbody.innerHTML=`<tr><td colspan="7">Gagal memuat data.</td></tr>`;
+          pager.innerHTML='';return;
         }
 
-        const rows = json.data.map(t => `
+        const rows=json.data.map(t=>`
           <tr>
             <td>${t.id_tamu}</td>
             <td>${t.nama}</td>
@@ -194,103 +132,78 @@
             <td>${t.email}</td>
             <td>${t.tanggal}</td>
             <td class="aksi">
-              <button class="btn-icon" title="Hapus" data-del="${t.id_tamu}">🗑️</button>
+              <button class="btn-icon btn-delete" title="Hapus" data-del="${t.id_tamu}">🗑️</button>
             </td>
           </tr>`).join('');
 
-        tbody.innerHTML = rows || `<tr><td colspan="7">Tidak ada data.</td></tr>`;
-
-        totalPage = json.totalPage || 1;
+        tbody.innerHTML=rows||`<tr><td colspan="7">Tidak ada data.</td></tr>`;
+        totalPage=json.totalPage||1;
         renderPager();
-
-      } catch (e) {
+      }catch(e){
         console.error(e);
-        tbody.innerHTML = `<tr><td colspan="7">Gagal memuat data (koneksi bermasalah).</td></tr>`;
-        pager.innerHTML = '';
+        tbody.innerHTML=`<tr><td colspan="7">Gagal memuat data (koneksi bermasalah).</td></tr>`;
+        pager.innerHTML='';
       }
     }
 
-    function renderPager() {
-      const pages = Math.max(1, totalPage);
-      const items = [];
-      items.push(`<button class="page" ${page === 1 ? 'disabled' : ''} onclick="gotoPage(${page - 1})">◀</button>`);
-
-      const windowSize = 5;
-      let start = Math.max(1, page - Math.floor(windowSize / 2));
-      let end = Math.min(pages, start + windowSize - 1);
-      if (end - start + 1 < windowSize) start = Math.max(1, end - windowSize + 1);
-
-      for (let i = start; i <= end; i++) {
-        items.push(`<button class="page ${i === page ? 'active' : ''}" onclick="gotoPage(${i})">${i}</button>`);
+    function renderPager(){
+      const pages=Math.max(1,totalPage);
+      const items=[];
+      items.push(`<button class="page" ${page===1?'disabled':''} onclick="gotoPage(${page-1})">◀</button>`);
+      const windowSize=5;
+      let start=Math.max(1,page-Math.floor(windowSize/2));
+      let end=Math.min(pages,start+windowSize-1);
+      if(end-start+1<windowSize)start=Math.max(1,end-windowSize+1);
+      for(let i=start;i<=end;i++){
+        items.push(`<button class="page ${i===page?'active':''}" onclick="gotoPage(${i})">${i}</button>`);
       }
-
-      items.push(`<button class="page" ${page === pages ? 'disabled' : ''} onclick="gotoPage(${page + 1})">▶</button>`);
-      pager.innerHTML = items.join('');
+      items.push(`<button class="page" ${page===pages?'disabled':''} onclick="gotoPage(${page+1})">▶</button>`);
+      pager.innerHTML=items.join('');
     }
 
-    window.gotoPage = function (n) {
-      if (n < 1 || n > totalPage) return;
-      page = n; loadData();
-    };
+    window.gotoPage=function(n){if(n<1||n>totalPage)return;page=n;loadData();};
 
-    // ====== SEARCH ======
     let _t;
-    searchInput.addEventListener('input', () => {
+    searchInput.addEventListener('input',()=>{
       clearTimeout(_t);
-      _t = setTimeout(() => {
-        q = searchInput.value.trim();
-        page = 1;
-        loadData();
-      }, 300);
+      _t=setTimeout(()=>{
+        q=searchInput.value.trim();page=1;loadData();
+      },300);
     });
 
-    // ====== DELETE MODAL ======
-    const backdrop = document.getElementById('confirmBackdrop');
-    const btnCancel = document.getElementById('btnCancel');
-    const btnYes = document.getElementById('btnYes');
+    const backdrop=document.getElementById('confirmBackdrop');
+    const btnCancel=document.getElementById('btnCancel');
+    const btnYes=document.getElementById('btnYes');
 
-    function openConfirm(id) {
-      pendingDeleteId = id;
-      backdrop.style.display = 'flex';
-      backdrop.setAttribute('aria-hidden', 'false');
-    }
-    function closeConfirm() {
-      pendingDeleteId = null;
-      backdrop.style.display = 'none';
-      backdrop.setAttribute('aria-hidden', 'true');
-    }
+    function openConfirm(id){pendingDeleteId=id;backdrop.style.display='flex';backdrop.setAttribute('aria-hidden','false');}
+    function closeConfirm(){pendingDeleteId=null;backdrop.style.display='none';backdrop.setAttribute('aria-hidden','true');}
 
-    tbody.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-del]');
-      if (!btn) return;
-      const id = Number(btn.getAttribute('data-del'));
+    tbody.addEventListener('click',e=>{
+      const btn=e.target.closest('[data-del]');
+      if(!btn||document.body.classList.contains('viewer-mode'))return;
+      const id=Number(btn.getAttribute('data-del'));
       openConfirm(id);
     });
 
-    btnCancel.addEventListener('click', closeConfirm);
-
-    btnYes.addEventListener('click', async () => {
-      if (!pendingDeleteId) return;
-      try {
-        const res = await fetch(`/sayhi/api/tamu/delete.php?id=${pendingDeleteId}`);
-        const json = await res.json();
-        if (json.status === 'success') {
+    btnCancel.addEventListener('click',closeConfirm);
+    btnYes.addEventListener('click',async()=>{
+      if(!pendingDeleteId)return;
+      try{
+        const res=await fetch(`/sayhi/api/tamu/delete.php?id=${pendingDeleteId}`);
+        const json=await res.json();
+        if(json.status==='success'){
           closeConfirm();
           await loadData();
-          if (tbody.children.length === 1 && page > 1) {
-            page--;
-            await loadData();
-          }
-        } else {
-          alert('Gagal menghapus data: ' + (json.message || ''));
+          if(tbody.children.length===1&&page>1){page--;await loadData();}
+        }else{
+          alert('Gagal menghapus data: '+(json.message||''));
         }
-      } catch (err) {
+      }catch(err){
         alert('Koneksi gagal. Coba lagi.');
         console.error(err);
       }
     });
 
-    // ====== INIT ======
     loadData();
   </script>
 </body>
