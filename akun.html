@@ -14,13 +14,28 @@
   <link rel="stylesheet" href="css/app.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+  <!-- === PROTEKSI LOGIN & ROLE === -->
   <script>
-    (async function guard() {
+    (async function guardPage() {
       try {
         const r = await fetch("/sayhi/api/auth/me.php");
         const s = await r.json();
-        if (!s.loggedIn) { location.href = "login.html"; }
-      } catch (e) { location.href = "login.html"; }
+
+        if (!s.loggedIn) {
+          location.href = "login.html";
+          return;
+        }
+
+        const adminOnly = ["data.html", "laporan.html", "akun.html"];
+        const current = location.pathname.split("/").pop();
+        if (adminOnly.includes(current) && s.role !== "Admin") {
+          alert("Halaman ini hanya untuk Admin.");
+          location.href = "index.html";
+        }
+
+      } catch (e) {
+        location.href = "login.html";
+      }
     })();
   </script>
 </head>
@@ -37,19 +52,19 @@
       <div class="col-lg-4">
         <div class="card p-4 text-center shadow-sm">
           <div class="avatar mx-auto mb-3" style="width:88px;height:88px;border-radius:50%;background:#ffd6db"></div>
-          <h5 class="fw-bold mb-1">Admin SayHi</h5>
-          <div class="text-muted small mb-3">@admin • admin@sayhi.test</div>
+          <h5 class="fw-bold mb-1" id="namaAkun">-</h5>
+          <div class="text-muted small mb-3" id="infoAkun">@- • -</div>
 
           <div class="mb-2">
-            <input class="form-control mb-2" type="text" placeholder="Nama Tampilan">
-            <input class="form-control mb-2" type="email" placeholder="Email">
-            <input class="form-control mb-2" type="password" placeholder="Password baru">
-            <input class="form-control" type="password" placeholder="Ulangi password">
+            <input id="newEmail" class="form-control mb-2" type="email" placeholder="Email baru">
+            <input id="oldPass" class="form-control mb-2" type="password" placeholder="Password lama">
+            <input id="newPass" class="form-control mb-2" type="password" placeholder="Password baru">
+            <input id="confirmPass" class="form-control" type="password" placeholder="Ulangi password">
           </div>
 
           <div class="d-flex justify-content-center gap-2 mt-3">
-            <button class="btn btn-primary">Simpan Perubahan</button>
-            <button class="btn btn-secondary">Keluar</button>
+            <button class="btn btn-primary" id="btnSave">Simpan Perubahan</button>
+            <button class="btn btn-secondary" id="btnLogout">Keluar</button>
           </div>
         </div>
       </div>
@@ -74,8 +89,8 @@
                 <thead class="table-light">
                   <tr>
                     <th>Username</th>
+                    <th>Email</th>
                     <th>Role</th>
-                    <th>Status</th>
                     <th>Last Login</th>
                     <th>Aksi</th>
                   </tr>
@@ -130,36 +145,113 @@
       });
     }));
 
-    // Users dummy data
-    const users = [
-      { u: 'admin', role: 'Admin', status: 'Active', last: '2025-09-28 10:21' },
-      { u: 'viewer1', role: 'Viewer', status: 'Suspended', last: '2025-09-20 12:00' }
-    ];
     const tbody = document.querySelector('#tblUsers tbody');
 
-    function renderUsers(list) {
-      tbody.innerHTML = list.map(x => `
-        <tr>
-          <td>${x.u}</td>
-          <td>${x.role}</td>
-          <td>${x.status}</td>
-          <td>${x.last}</td>
-          <td>
-            <button class="btn btn-sm btn-warning" onclick="alert('Reset password ${x.u}')">Reset</button>
-            <button class="btn btn-sm btn-info text-white" onclick="alert('Ubah ${x.u}')">Ubah</button>
-          </td>
-        </tr>`).join('');
+    // === LOAD PROFILE ===
+    async function loadProfile() {
+      const res = await fetch("/sayhi/api/auth/me.php");
+      const j = await res.json();
+      if (!j.loggedIn) { location.href = "login.html"; return; }
+      document.getElementById("namaAkun").textContent = j.username;
+      document.getElementById("infoAkun").textContent = `@${j.username} • ${j.email}`;
     }
 
-    renderUsers(users);
+    // === LOAD USERS ===
+    async function loadUsers(q = "") {
+      const res = await fetch("/sayhi/api/auth/list_users.php" + (q ? "?q=" + encodeURIComponent(q) : ""));
+      const j = await res.json();
+      tbody.innerHTML = "";
 
-    document.getElementById('u-q').oninput = (e) => {
-      const q = e.target.value.toLowerCase();
-      renderUsers(users.filter(x => (x.u + x.role + x.status).toLowerCase().includes(q)));
+      if (j.status !== "success") {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">${j.message}</td></tr>`;
+        return;
+      }
+
+      for (const u of j.data) {
+        tbody.insertAdjacentHTML("beforeend", `
+          <tr>
+            <td>${u.username}</td>
+            <td>${u.email}</td>
+            <td>${u.role}</td>
+            <td>${u.last_login || "-"}</td>
+            <td>
+              <button class="btn btn-sm btn-warning" onclick="resetPassword(${u.id_user})">Reset</button>
+              <button class="btn btn-sm btn-info text-white" onclick="editUser(${u.id_user})">Ubah</button>
+            </td>
+          </tr>
+        `);
+      }
+    }
+
+    async function resetPassword(id) {
+      const { value: ok } = await Swal.fire({
+        title: "Reset Password?",
+        text: "Password akan diubah ke '123456'.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ya, reset"
+      });
+      if (!ok) return;
+      const r = await fetch("/sayhi/api/auth/reset_password.php?id=" + id);
+      const j = await r.json();
+      Swal.fire(j.status === "success" ? "Berhasil" : "Gagal", j.message, j.status);
+    }
+
+    async function editUser(id) {
+      const email = prompt("Masukkan email baru (kosongkan jika tidak diubah):");
+      if (email === null) return;
+      const role = prompt("Masukkan role (Admin/Viewer):");
+      if (!role) return;
+      const fd = new FormData();
+      fd.append("id_user", id);
+      fd.append("email", email);
+      fd.append("role", role);
+      const res = await fetch("/sayhi/api/auth/update_user.php", { method: "POST", body: fd });
+      const j = await res.json();
+      Swal.fire(j.status === "success" ? "Berhasil" : "Gagal", j.message, j.status);
+      loadUsers();
+    }
+
+    document.getElementById('u-q').oninput = e => loadUsers(e.target.value);
+    document.getElementById('btnAdd').onclick = () => Swal.fire("Info", "Form tambah user akan dibuat di backend.", "info");
+
+    // === SIMPAN PERUBAHAN PROFILE ===
+    document.getElementById("btnSave").onclick = async () => {
+      const newEmail = document.getElementById("newEmail").value.trim();
+      const oldPass = document.getElementById("oldPass").value.trim();
+      const newPass = document.getElementById("newPass").value.trim();
+      const confirm = document.getElementById("confirmPass").value.trim();
+
+      if (newPass && newPass !== confirm)
+        return Swal.fire("Gagal", "Password baru tidak sama.", "error");
+
+      if (newEmail) {
+        const fd = new FormData();
+        fd.append("email", newEmail);
+        await fetch("/sayhi/api/auth/update_profile.php", { method: "POST", body: fd });
+      }
+
+      if (oldPass && newPass) {
+        const fd = new FormData();
+        fd.append("old_pass", oldPass);
+        fd.append("new_pass", newPass);
+        await fetch("/sayhi/api/auth/change_password.php", { method: "POST", body: fd });
+      }
+
+      Swal.fire("Berhasil", "Perubahan telah disimpan!", "success");
+      document.getElementById("newEmail").value = "";
+      document.getElementById("oldPass").value = "";
+      document.getElementById("newPass").value = "";
+      document.getElementById("confirmPass").value = "";
+      loadProfile();
     };
 
-    document.getElementById('btnAdd').onclick = () =>
-      alert('Form tambah user (modal) – sambungkan ke backend.');
+    // === LOGOUT ===
+    document.getElementById("btnLogout").onclick = () => location.href = "/sayhi/api/auth/logout.php";
+
+    // === INITIAL LOAD ===
+    loadProfile();
+    loadUsers();
   </script>
 </body>
 

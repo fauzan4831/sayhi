@@ -27,14 +27,11 @@
 </head>
 
 <body class="sayhi-bg d-flex align-items-center min-vh-100">
-
-  <!-- Top Loading Bar -->
   <div id="topbar"></div>
 
   <div class="container py-5">
     <div class="row justify-content-center align-items-center g-5">
 
-      <!-- LEFT: Form Sign Up -->
       <div class="col-lg-6 col-md-7">
         <div class="card shadow border-0 p-4 p-md-5 rounded-4">
           <div class="text-center mb-4">
@@ -69,10 +66,7 @@
             </div>
 
             <div class="d-grid mb-3">
-              <button type="submit" id="signupBtn" class="btn btn-sayhi btn-lg rounded-3">
-                <span class="spinner-border spinner-border-sm me-2 d-none" id="spinner"></span>
-                Sign Up
-              </button>
+              <button type="submit" class="btn btn-sayhi btn-lg rounded-3">Sign Up</button>
             </div>
 
             <div class="text-center">
@@ -85,78 +79,77 @@
         </div>
       </div>
 
-      <!-- RIGHT: Illustration -->
       <div class="col-lg-5 col-md-5 text-center">
         <img src="gambar/illustration.png" alt="Ilustrasi menyapa" class="img-fluid"
           style="max-height: 360px; opacity:.9;">
       </div>
-
     </div>
   </div>
 
-  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- JS Logic -->
+  <!-- === UX-Improved Signup Script === -->
   <script>
-    const form = document.getElementById("signupForm");
-    const spinner = document.getElementById("spinner");
-    const btn = document.getElementById("signupBtn");
     const TOPBAR = document.getElementById("topbar");
+    const SayHiTopbar = {
+      start() {
+        TOPBAR.style.width = "30%";
+        requestAnimationFrame(() => TOPBAR.style.width = "80%");
+      },
+      done() {
+        TOPBAR.style.width = "100%";
+        setTimeout(() => TOPBAR.style.width = "0%", 300);
+      }
+    };
 
-    function topbarStart() { TOPBAR.style.width = '35%'; requestAnimationFrame(() => TOPBAR.style.width = '85%'); }
-    function topbarDone() { TOPBAR.style.width = '100%'; setTimeout(() => TOPBAR.style.width = '0%', 300); }
-
-    function toast(icon, title) {
-      Swal.fire({ toast: true, icon, title, position: 'top-end', showConfirmButton: false, timer: 1600 });
-    }
-
-    form.addEventListener("submit", async (e) => {
+    document.querySelector("#signupForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      const form = e.target;
+      const btn = form.querySelector("button[type='submit']");
       const fullname = document.getElementById("fullname").value.trim();
       const username = document.getElementById("username").value.trim();
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
 
       if (!fullname || !username || !email || !password) {
-        toast('error', 'Isi semua field!');
+        Swal.fire({ icon: "warning", title: "Form belum lengkap", text: "Isi semua kolom!" });
         return;
       }
 
-      topbarStart();
-      spinner.classList.remove('d-none');
       btn.disabled = true;
-
-      const fd = new FormData();
-      fd.append("fullname", fullname);
-      fd.append("username", username);
-      fd.append("email", email);
-      fd.append("password", password);
+      btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Mendaftar...`;
+      SayHiTopbar.start();
 
       try {
-        // ✅ sesuai struktur folder /sayhi/api/auth/register.php
-        const res = await fetch("/sayhi/api/auth/register.php", {
-          method: "POST",
-          body: fd
-        });
+        const fd = new FormData();
+        fd.append("fullname", fullname);
+        fd.append("username", username);
+        fd.append("email", email);
+        fd.append("password", password);
 
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const result = await res.json();
+        const res = await fetch("/sayhi/api/auth/register.php", { method: "POST", body: fd });
+        const j = await res.json();
 
-        if (result.status === "success") {
-          toast('success', 'Pendaftaran berhasil');
-          setTimeout(() => { window.location.href = "login.html"; }, 1000);
-        } else {
-          toast('error', result.message || 'Gagal mendaftar');
+        if (j.status !== "success") {
+          Swal.fire({ icon: "error", title: "Pendaftaran gagal", text: j.message || "Silakan periksa kembali data Anda." });
+          return;
         }
 
+        Swal.fire({
+          icon: "success",
+          title: "Akun berhasil dibuat!",
+          text: "Silakan login untuk melanjutkan.",
+          showConfirmButton: false,
+          timer: 1500
+        });
+
+        setTimeout(() => location.href = "login.html", 1500);
       } catch (err) {
-        console.error(err);
-        toast('error', 'Tidak dapat terhubung ke server');
+        Swal.fire({ icon: "error", title: "Kesalahan Server", text: "Tidak dapat terhubung ke server." });
       } finally {
-        topbarDone();
-        spinner.classList.add('d-none');
+        SayHiTopbar.done();
         btn.disabled = false;
+        btn.innerHTML = "Sign Up";
       }
     });
   </script>

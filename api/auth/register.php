@@ -6,7 +6,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 // ==== 1. Ambil data dari request ====
 $username = trim($_POST['username'] ?? '');
-$email    = trim($_POST['email'] ?? '');
+$email = trim($_POST['email'] ?? '');
 $password = trim($_POST['password'] ?? '');
 
 // ==== 2. Validasi input ====
@@ -50,6 +50,4 @@ if ($stmt->execute()) {
 
 $stmt->close();
 $conn->close();
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../helpers/response.php';
 ?>

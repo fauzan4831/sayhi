@@ -27,14 +27,11 @@
 </head>
 
 <body class="sayhi-bg d-flex align-items-center min-vh-100">
-
-  <!-- Top Loading Bar -->
   <div id="topbar"></div>
 
   <div class="container py-5">
     <div class="row justify-content-center align-items-center g-5">
 
-      <!-- LEFT: Form Login -->
       <div class="col-lg-6 col-md-7">
         <div class="card shadow border-0 p-4 p-md-5 rounded-4">
           <div class="text-center mb-4">
@@ -56,10 +53,7 @@
             </div>
 
             <div class="d-grid mb-3">
-              <button type="submit" id="loginBtn" class="btn btn-sayhi btn-lg rounded-3">
-                <span class="spinner-border spinner-border-sm me-2 d-none" id="spinner"></span>
-                Login
-              </button>
+              <button type="submit" class="btn btn-sayhi btn-lg rounded-3">Login</button>
             </div>
 
             <div class="text-center">
@@ -72,79 +66,76 @@
         </div>
       </div>
 
-      <!-- RIGHT: Illustration -->
       <div class="col-lg-5 col-md-5 text-center">
         <img src="gambar/illustration.png" alt="Ilustrasi menyapa" class="img-fluid"
           style="max-height: 360px; opacity:.9;">
       </div>
-
     </div>
   </div>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- JS Logic -->
+  <!-- === UX-Improved Login Script === -->
   <script>
-    const form = document.getElementById("loginForm");
-    const spinner = document.getElementById("spinner");
-    const btn = document.getElementById("loginBtn");
     const TOPBAR = document.getElementById("topbar");
+    const SayHiTopbar = {
+      start() {
+        TOPBAR.style.width = "30%";
+        requestAnimationFrame(() => TOPBAR.style.width = "80%");
+      },
+      done() {
+        TOPBAR.style.width = "100%";
+        setTimeout(() => TOPBAR.style.width = "0%", 300);
+      }
+    };
 
-    function topbarStart() { TOPBAR.style.width = '35%'; requestAnimationFrame(() => TOPBAR.style.width = '85%'); }
-    function topbarDone() { TOPBAR.style.width = '100%'; setTimeout(() => TOPBAR.style.width = '0%', 300); }
-
-    function toast(icon, title) {
-      Swal.fire({ toast: true, icon, title, position: 'top-end', showConfirmButton: false, timer: 1600 });
-    }
-
-    form.addEventListener("submit", async (e) => {
+    document.querySelector("#loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      const form = e.target;
+      const btn = form.querySelector("button[type='submit']");
       const login = document.getElementById("login").value.trim();
       const password = document.getElementById("password").value.trim();
+
       if (!login || !password) {
-        toast('error', 'Isi semua field!');
+        Swal.fire({ icon: "warning", title: "Form belum lengkap", text: "Isi semua kolom!" });
         return;
       }
 
-      topbarStart();
-      spinner.classList.remove('d-none');
       btn.disabled = true;
-
-      const fd = new FormData();
-      fd.append("login", login);
-      fd.append("password", password);
+      btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Memproses...`;
+      SayHiTopbar.start();
 
       try {
-        // ✅ Fetch sesuai struktur folder /sayhi/api/auth/login.php
-        const res = await fetch("/sayhi/api/auth/login.php", {
-          method: "POST",
-          body: fd
-        });
+        const fd = new FormData();
+        fd.append("login", login);
+        fd.append("password", password);
 
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const res = await fetch("/sayhi/api/auth/login.php", { method: "POST", body: fd });
+        const j = await res.json();
 
-        const result = await res.json();
-        console.log(result);
-
-        if (result.status === "success") {
-          toast('success', 'Login berhasil');
-          setTimeout(() => { window.location.href = "index.html"; }, 800);
-        } else {
-          toast('error', result.message || 'Login gagal');
+        if (j.status !== "success") {
+          Swal.fire({ icon: "error", title: "Gagal login", text: j.message || "Periksa kembali data Anda." });
+          return;
         }
 
+        Swal.fire({
+          icon: "success",
+          title: "Login berhasil!",
+          showConfirmButton: false,
+          timer: 1200
+        });
+
+        setTimeout(() => location.href = "index.html", 1200);
       } catch (err) {
-        console.error(err);
-        toast('error', 'Tidak dapat terhubung ke server');
+        Swal.fire({ icon: "error", title: "Kesalahan Server", text: "Tidak dapat terhubung ke server." });
       } finally {
-        topbarDone();
-        spinner.classList.add('d-none');
+        SayHiTopbar.done();
         btn.disabled = false;
+        btn.innerHTML = "Login";
       }
     });
   </script>
-
 </body>
 
 </html>

@@ -12,41 +12,71 @@ $where = "";
 $params = [];
 $types = "";
 
+// jika ada kata kunci pencarian
 if ($search !== "") {
     $like = "%{$search}%";
-    $where = " WHERE nama LIKE ? OR instansi LIKE ? ";
+    $where = " WHERE t.nama LIKE ? OR t.instansi LIKE ? ";
     $params = [$like, $like];
     $types = "ss";
 }
 
-// total
+// ====== Hitung total data ======
 if ($where) {
-    $ts = $conn->prepare("SELECT COUNT(*) as total FROM tamu {$where}");
+    $sqlTotal = "SELECT COUNT(*) AS total 
+                 FROM tamu t 
+                 LEFT JOIN status_tamu s ON t.id_status = s.id_status
+                 {$where}";
+    $ts = $conn->prepare($sqlTotal);
     $ts->bind_param($types, ...$params);
     $ts->execute();
     $totalData = (int) $ts->get_result()->fetch_assoc()['total'];
+    $ts->close();
 } else {
-    $totalData = (int) $conn->query("SELECT COUNT(*) as total FROM tamu")->fetch_assoc()['total'];
+    $totalData = (int) $conn
+        ->query("SELECT COUNT(*) AS total FROM tamu")
+        ->fetch_assoc()['total'];
 }
-$totalPage = (int) ceil($totalData / $limit);
 
-// data
-$sql = "SELECT * FROM tamu {$where} ORDER BY id_tamu DESC LIMIT ? OFFSET ?";
+$totalPage = (int) ceil($totalData / $limit);
+$awal = $_GET["awal"] ?? null;
+$akhir = $_GET["akhir"] ?? null;
+
+$where = "";
+if ($awal && $akhir) {
+    $where = "WHERE t.tanggal BETWEEN '$awal' AND '$akhir'";
+}
+
+// ====== Ambil data tamu + status ======
+$sql = "SELECT 
+            t.id_tamu,
+            t.nama,
+            t.instansi,
+            t.no_hp,
+            t.email,
+            s.nama_status AS status,
+            t.tanggal
+        FROM tamu t
+        LEFT JOIN status_tamu s ON t.id_status = s.id_status
+        {$where}
+        ORDER BY t.id_tamu DESC
+        LIMIT ? OFFSET ?";
+
 if ($where) {
     $stmt = $conn->prepare($sql);
     $types2 = $types . "ii";
     $params2 = array_merge($params, [$limit, $offset]);
     $stmt->bind_param($types2, ...$params2);
 } else {
-    $stmt = $conn->prepare("SELECT * FROM tamu ORDER BY id_tamu DESC LIMIT ? OFFSET ?");
+    $stmt = $conn->prepare(str_replace($where, "", $sql));
     $stmt->bind_param("ii", $limit, $offset);
 }
+
 $stmt->execute();
 $res = $stmt->get_result();
 
 $data = [];
 while ($row = $res->fetch_assoc()) {
-    // Masking aman
+    // Masking email dan no_hp untuk keamanan
     $email = $row['email'] ?? '';
     if (strpos($email, '@') !== false) {
         [$u, $d] = explode('@', $email, 2);
@@ -54,12 +84,17 @@ while ($row = $res->fetch_assoc()) {
     } else {
         $email = '—';
     }
+
     $hp = $row['no_hp'] ?? '';
     if ($hp !== '')
         $hp = substr($hp, 0, min(4, strlen($hp))) . "****";
+
     $row['email'] = $email;
     $row['no_hp'] = $hp;
     $data[] = $row;
 }
+
+$stmt->close();
+$conn->close();
 
 json_ok($data, ["page" => $page, "totalPage" => $totalPage]);
