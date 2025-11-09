@@ -2,8 +2,6 @@
 
 SayHi! adalah aplikasi buku tamu (guest book) berbasis web yang modern, dibangun dengan PHP native dan JavaScript. Aplikasi ini memungkinkan pencatatan tamu secara digital melalui halaman publik yang interaktif dan menyediakan dashboard admin yang fungsional untuk mengelola data, melihat laporan, dan mengelola pengguna.
 
-![Ilustrasi Halaman Tamu](fauzan4831/sayhi/sayhi-7ca4e2cd995262a9b0962d6510cb9f48efcdb7b9/gambar/illustration.png)
-
 ## ✨ Fitur Utama
 
 ### Halaman Publik (`user-page.html`)
@@ -305,7 +303,7 @@ Proyek ini dilisensikan di bawah **MIT License**.
 ---
 MIT License
 
-Copyright (c) 2025 [Nama Anda/Pemilik Proyek]
+Copyright (c) 2025 [Fauzan]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
