@@ -25,17 +25,74 @@
     <div id="sayhi-navbar"></div>
     <div id="topbar"></div>
 
-    <!-- === MAIN CONTENT === -->
-    <main>
-        <div class="hero-text">
-            <h1>Say Hi!</h1>
-            <p>Sambut Tamu dengan Senyum, Catat dengan Mudah.</p>
-        </div>
-    </main>
+    <!-- === HERO SECTION === -->
+    <section class="hero-section text-center py-5">
+        <img src="gambar/illustration.png" alt="SayHi Illustration" class="img-fluid mb-4" style="max-width: 420px;">
+        <h1 class="fw-bold text-danger">Selamat Datang di SayHi!</h1>
+        <p class="lead mb-4">Aplikasi buku tamu digital untuk mencatat setiap kunjungan dengan cara yang lebih modern
+            dan efisien.</p>
+        <a href="signup.html" class="btn btn-danger btn-lg px-4 me-2">Daftar Sekarang</a>
+        <a href="user-page.html" class="btn btn-outline-danger btn-lg px-4">Masuk Sebagai Tamu</a>
+    </section>
 
-    <div class="illustration">
-        <img src="gambar/illustration.png" alt="Ilustrasi orang menyapa">
-    </div>
+    <!-- === FITUR UNGGULAN === -->
+    <section class="features py-5" style="background-color:#fff5f7;">
+        <div class="container">
+            <h2 class="text-center text-danger mb-4 fw-bold">Fitur Unggulan</h2>
+            <div class="row text-center">
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm p-4 border-0 h-100" style="border-radius:18px;">
+                        <i class="fa-solid fa-clipboard-check fa-2x mb-3 text-danger"></i>
+                        <h5 class="fw-semibold">Pencatatan Otomatis</h5>
+                        <p class="text-muted">Setiap tamu yang datang tercatat secara digital tanpa perlu buku manual
+                            lagi.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm p-4 border-0 h-100" style="border-radius:18px;">
+                        <i class="fa-solid fa-chart-line fa-2x mb-3 text-danger"></i>
+                        <h5 class="fw-semibold">Laporan Real-Time</h5>
+                        <p class="text-muted">Admin dapat melihat statistik tamu secara langsung, lengkap dengan filter
+                            tanggal.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm p-4 border-0 h-100" style="border-radius:18px;">
+                        <i class="fa-solid fa-shield-heart fa-2x mb-3 text-danger"></i>
+                        <h5 class="fw-semibold">Keamanan Data</h5>
+                        <p class="text-muted">Setiap data tamu dilindungi dengan enkripsi untuk menjaga privasi dan
+                            integritas sistem.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === TENTANG APLIKASI === -->
+    <section class="about py-5 bg-white">
+        <div class="container text-center">
+            <h2 class="fw-bold text-danger mb-3">Tentang SayHi!</h2>
+            <p class="text-muted mx-auto" style="max-width:720px;">
+                SayHi! dikembangkan sebagai aplikasi buku tamu berbasis web yang dirancang untuk memudahkan instansi,
+                lembaga, maupun kampus dalam mengelola data tamu. Dengan tampilan yang ramah pengguna, setiap pengunjung
+                dapat mendaftar, login, dan mengisi kunjungan dengan mudah serta cepat.
+            </p>
+        </div>
+    </section>
+
+    <!-- === CTA SECTION === -->
+    <section class="cta-section py-5" style="background:linear-gradient(120deg,#ffd6db,#fff);">
+        <div class="container text-center">
+            <h2 class="fw-bold text-danger mb-3">Mulai Gunakan SayHi! Sekarang</h2>
+            <p class="text-muted mb-0">Nikmati pengalaman pencatatan tamu yang praktis, efisien, dan modern.</p>
+        </div>
+    </section>
+
+
+    <!-- === FOOTER === -->
+    <footer class="text-center py-3 mt-5 text-muted small">
+        <p>© 2025 SayHi! Guest Book Web App — Dibuat dengan 💖 oleh Sayhi-Group</p>
+    </footer>
 
     <!-- === SCRIPTS === -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
