@@ -12,7 +12,7 @@ $where = "";
 $params = [];
 $types = "";
 
-// jika ada kata kunci pencarian
+// ====== Filter pencarian (nama / instansi) ======
 if ($search !== "") {
     $like = "%{$search}%";
     $where = " WHERE t.nama LIKE ? OR t.instansi LIKE ? ";
@@ -20,12 +20,27 @@ if ($search !== "") {
     $types = "ss";
 }
 
+// ====== Filter tanggal (tambahan dari filter search) ======
+$awal = $_GET["awal"] ?? null;
+$akhir = $_GET["akhir"] ?? null;
+if ($awal && $akhir) {
+    // Jika sebelumnya sudah ada WHERE (dari pencarian)
+    if ($where) {
+        $where .= " AND t.tanggal BETWEEN ? AND ?";
+    } else {
+        $where = "WHERE t.tanggal BETWEEN ? AND ?";
+    }
+    $params[] = $awal;
+    $params[] = $akhir;
+    $types .= "ss";
+}
+
 // ====== Hitung total data ======
 if ($where) {
     $sqlTotal = "SELECT COUNT(*) AS total 
-                 FROM tamu t 
-                 LEFT JOIN status_tamu s ON t.id_status = s.id_status
-                 {$where}";
+                FROM tamu t 
+                LEFT JOIN status_tamu s ON t.id_status = s.id_status
+                {$where}";
     $ts = $conn->prepare($sqlTotal);
     $ts->bind_param($types, ...$params);
     $ts->execute();
@@ -38,13 +53,6 @@ if ($where) {
 }
 
 $totalPage = (int) ceil($totalData / $limit);
-$awal = $_GET["awal"] ?? null;
-$akhir = $_GET["akhir"] ?? null;
-
-$where = "";
-if ($awal && $akhir) {
-    $where = "WHERE t.tanggal BETWEEN '$awal' AND '$akhir'";
-}
 
 // ====== Ambil data tamu + status ======
 $sql = "SELECT 
@@ -61,15 +69,10 @@ $sql = "SELECT
         ORDER BY t.id_tamu DESC
         LIMIT ? OFFSET ?";
 
-if ($where) {
-    $stmt = $conn->prepare($sql);
-    $types2 = $types . "ii";
-    $params2 = array_merge($params, [$limit, $offset]);
-    $stmt->bind_param($types2, ...$params2);
-} else {
-    $stmt = $conn->prepare(str_replace($where, "", $sql));
-    $stmt->bind_param("ii", $limit, $offset);
-}
+$stmt = $conn->prepare($sql);
+$params2 = array_merge($params, [$limit, $offset]);
+$types2 = $types . "ii";
+$stmt->bind_param($types2, ...$params2);
 
 $stmt->execute();
 $res = $stmt->get_result();
